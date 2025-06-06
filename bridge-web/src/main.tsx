@@ -42,6 +42,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           transition={Bounce}
         />
       </RainbowKitProvider>
-    </WagmiConfig>
+      </QueryClientProvider> {/* Ensure QueryClientProvider is closed before WagmiProvider */}
+    </WagmiProvider> {/* Corrected closing tag */}
   </React.StrictMode>
 );
