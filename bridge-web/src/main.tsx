@@ -7,25 +7,30 @@ import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
-import { WagmiConfig } from "wagmi";
-import { chains, wagmiConfig } from "./config/wallet.ts";
+import { WagmiProvider } from "wagmi"; // Changed from WagmiConfig
+import { wagmiConfig } from "./config/wallet.ts"; // Removed chains
 import { ToastContainer, Bounce } from "react-toastify";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// Create a client
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider
-        theme={darkTheme({
-          accentColor: "#4DBBBA",
-          accentColorForeground: "white",
-        })}
-        showRecentTransactions
-        chains={chains}
-      >
-        <App />
-        <ToastContainer
-          position="bottom-right"
-          autoClose={30000}
+    <WagmiProvider config={wagmiConfig}> {/* Changed from WagmiConfig */}
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider
+          theme={darkTheme({
+            accentColor: "#4DBBBA",
+            accentColorForeground: "white",
+          })}
+          showRecentTransactions
+          // chains prop is no longer needed here as it's handled by WagmiProvider & getDefaultConfig
+        >
+          <App />
+          <ToastContainer
+            position="bottom-right"
+            autoClose={30000}
           hideProgressBar={false}
           newestOnTop={false}
           closeOnClick={false}
