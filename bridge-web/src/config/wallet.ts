@@ -1,11 +1,12 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { type Chain } from "viem"; // Added import for Chain type
 import { chainConfigs } from "./config";
 
 // Extract the chain objects from the configuration.
 // These are already of the type `Chain` from 'viem/chains'
-const configuredChains = Object.values(chainConfigs)
+const configuredChains: Chain[] = Object.values(chainConfigs)
   .map((chainConfig) => chainConfig?.wagmiChain)
-  .filter(Boolean) as any[]; // Ensure undefined chains are filtered out, 'as any[]' to bypass strict type checks if necessary for getDefaultConfig
+  .filter(Boolean); // Removed 'as any[]' and added explicit Chain[] type
 
 // TODO: Replace with your actual project ID and application name
 const projectId = "YOUR_PROJECT_ID";

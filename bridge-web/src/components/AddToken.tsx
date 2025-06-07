@@ -18,11 +18,26 @@ const AddToken: FC<{ info: TokenConfig; decimals: number; symbol: string }> = ({
 }: AddTokenProps) => {
   const { connector } = useAccount();
 
-  let addToMetamask = async () => {
-    const provider = connector!.options.getProvider();
+  const addTokenToWallet = async () => { // Renamed for clarity from addToMetamask to avoid confusion with component name
+    if (!connector) {
+      toast.error("Wallet not connected");
+      return;
+    }
+    const provider = await connector.getProvider();
+    if (!provider) {
+      console.error("Provider not available from connector.");
+      toast.error("Wallet provider not available. Cannot add token.");
+      return;
+    }
+
     let toastOpts = { autoClose: 5000 };
     try {
       toast.info("Confirm token add in wallet", toastOpts);
+      // Ensure info.address is not null
+      if (!info.address) {
+        toast.error("Token address is not available.");
+        return;
+      }
       const wasAdded = await provider.request({
         method: "wallet_watchAsset",
         params: {
@@ -46,16 +61,18 @@ const AddToken: FC<{ info: TokenConfig; decimals: number; symbol: string }> = ({
     }
   };
 
-  var result = <div />;
-  if (connector && connector.options.getProvider()) {
-    result = (
-      <button
-        className="btn join-item"
-        onClick={() => {
-          addToMetamask();
-        }}
-      >
-        <FontAwesomeIcon icon={faPlus} color="white" className="ml-auto" />{" "}
+  // Render the button only if a connector is available.
+  // The actual provider fetching and check will happen inside addTokenToWallet.
+  if (!connector) {
+    return null; // Or some disabled button or placeholder
+  }
+
+  return (
+    <button
+      className="btn join-item"
+      onClick={addTokenToWallet} // Updated to new function name
+    >
+      <FontAwesomeIcon icon={faPlus} color="white" className="ml-auto" />{" "}
       </button>
     );
   }
