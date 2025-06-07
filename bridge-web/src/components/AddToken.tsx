@@ -75,9 +75,7 @@ const AddToken: FC<{ info: TokenConfig; decimals: number; symbol: string }> = ({
       <FontAwesomeIcon icon={faPlus} color="white" className="ml-auto" />{" "}
       </button>
     );
-  }
-
-  return result;
+  // Extraneous closing brace and 'return result;' removed.
 };
 
 export default AddToken;
