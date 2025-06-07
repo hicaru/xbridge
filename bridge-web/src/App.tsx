@@ -13,7 +13,7 @@ import {
   siteConfig,
 } from "./config/config";
 import {
-  erc20ABI,
+  // erc20ABI, // Removed
   useAccount,
   useBalance,
   useContractRead,
@@ -22,9 +22,10 @@ import {
   // usePrepareContractWrite, // Removed
   usePublicClient,
   useSwitchNetwork,
-  useWaitForTransaction,
+  useWaitForTransactionReceipt, // Corrected
 } from "wagmi";
 import {
+  erc20Abi, // Added
   getAddress,
   formatEther,
   formatUnits,
@@ -157,14 +158,14 @@ function App() {
   }, [currentChains, toChainConfig.tokens, fromChainConfig.tokens]);
 
   const { data: contractDecimals } = useContractRead({
-    abi: erc20ABI,
+    abi: erc20Abi, // Changed
     functionName: "decimals",
     address: token.address ?? zeroAddress,
     enabled: !!token.address && !pendingChainSwitch,
     // watch: true removed, typically decimals don't change.
   });
   const { data: contractSymbol } = useContractRead({
-    abi: erc20ABI,
+    abi: erc20Abi, // Changed
     functionName: "symbol",
     address: token.address ?? zeroAddress,
     enabled: !!token.address && !pendingChainSwitch,
@@ -193,7 +194,7 @@ function App() {
   });
 
   let { data: contractBalance } = useContractRead({
-    abi: erc20ABI,
+    abi: erc20Abi, // Changed
     functionName: "balanceOf",
     args: account ? [account!] : undefined,
     address: token.address ?? zeroAddress,
@@ -214,7 +215,7 @@ function App() {
   const decimals = isNative ? nativeDecimals : contractDecimals;
   // We always say that native token transfers have enough allowance.
   const { data: allowance } = useContractRead({
-    abi: erc20ABI,
+    abi: erc20Abi, // Changed
     functionName: "allowance",
     address: token.address ?? zeroAddress,
     args: [account!, token.tokenManagerAddress],
@@ -347,7 +348,7 @@ function App() {
     try {
       const tx = await approveZero({
         address: token.address ?? zeroAddress,
-        abi: token.abi ?? erc20ABI,
+        abi: token.abi ?? erc20Abi, // Changed
         functionName: "approve",
         args: [token.tokenManagerAddress, 0n],
         gas: fromChainConfig.isZilliqa ? 400_000n : undefined,
@@ -376,7 +377,7 @@ function App() {
     try {
       const tx = await approve({
         address: token.address ?? zeroAddress,
-        abi: token.abi ?? erc20ABI,
+        abi: token.abi ?? erc20Abi, // Changed
         functionName: "approve",
         args: [
           token.tokenManagerAddress,
@@ -592,7 +593,7 @@ function App() {
       setLatestTxn(undefined);
     }
   }, [
-    isWaitingForTxn,
+    isProcessingTxn, // Changed from isWaitingForTxn
     txnReceipt,
     loadingId,
     latestTxn,
